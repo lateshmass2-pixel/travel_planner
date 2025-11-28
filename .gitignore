@@ -46,6 +46,10 @@ yarn-error.log
 uploads/
 temp/
 
+# Logs
+*.log
+server.log
+
 # OS
 .DS_Store
 Thumbs.db
