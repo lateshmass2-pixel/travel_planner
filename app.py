@@ -12,10 +12,11 @@ app = Flask(__name__)
 CORS(app)
 
 # Configure Gemini API
-DEFAULT_GEMINI_API_KEY = "AIzaSyBWT6WnlGVdNtVS1TkZPmYjgDIhqM88hu4"
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY') or DEFAULT_GEMINI_API_KEY
+# API key must be provided via GEMINI_API_KEY environment variable
+# Service account keys should be rotated regularly for security
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY environment variable is not set")
+    raise ValueError("GEMINI_API_KEY environment variable is not set. Please set it in your .env file or deployment environment.")
 
 genai.configure(api_key=GEMINI_API_KEY)
 
