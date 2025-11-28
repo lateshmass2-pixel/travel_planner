@@ -21,6 +21,8 @@ The Multi-Modal Travel Planner demonstrates the seamless integration of two core
 
 ## 🚀 Quick Start
 
+_For a one-command setup, see [QUICKSTART.md](QUICKSTART.md)._ 
+
 ### Prerequisites
 
 - Python 3.8+
@@ -46,19 +48,41 @@ The Multi-Modal Travel Planner demonstrates the seamless integration of two core
    pip install -r requirements.txt
    ```
 
-4. **Set up environment variables**
+4. **Set up environment variables** (Optional - pre-configured)
    ```bash
+   # The .env file is pre-configured with a working API key
+   # To use your own key:
    cp .env.example .env
    # Edit .env and add your Gemini API Key
    ```
 
 5. **Run the application**
    ```bash
+   # Recommended: Use the unified starter
+   python start.py
+   
+   # Alternative methods:
+   python run.py
+   # or
    python app.py
    ```
 
 6. **Access the application**
    Open your browser and navigate to `http://localhost:5000`
+
+## 🧰 Unified Dev Runner
+
+`start.py` provides a single command that launches the Flask backend and serves the frontend templates together. It also:
+- Loads environment variables from `.env`
+- Verifies that all required Python packages are installed
+- Confirms the Gemini API key is configured (with a working default)
+- Creates required directories such as `uploads/`
+- Shows helpful connection details and tips before launching the server
+
+Use it during development for the smoothest experience:
+```bash
+python start.py
+```
 
 ## 📋 Usage Guide
 
