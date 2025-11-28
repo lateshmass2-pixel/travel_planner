@@ -1,24 +1,23 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-import google.generativeai as genai
+from openai import OpenAI
 import os
 import base64
 from dotenv import load_dotenv
 import json
+import re
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-# Configure Gemini API
-# API key must be provided via GEMINI_API_KEY environment variable
-# Service account keys should be rotated regularly for security
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY environment variable is not set. Please set it in your .env file or deployment environment.")
+# Configure OpenAI API
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY environment variable is not set. Please set it in your .env file or deployment environment.")
 
-genai.configure(api_key=GEMINI_API_KEY)
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Configuration for file uploads
 UPLOAD_FOLDER = 'uploads'
@@ -86,17 +85,9 @@ def generate_itinerary():
         image_base64 = encode_image_to_base64(filepath)
         mime_type = get_image_mime_type(image_file.filename)
         
-        # Create the prompt for Gemini with explicit instruction for search grounding
+        # Create the prompt for OpenAI with vision capability
         system_prompt = """You are an expert travel planner. Analyze the provided image to identify the destination, 
 landmark, or location shown. Then, using the user's preferences and constraints, create a detailed, actionable travel itinerary.
-
-Important: Use Google Search results to find current, real-time information about:
-- Operating hours
-- Ticket prices
-- Current weather
-- Local reviews and ratings
-- Best routes and transportation options
-- Dining recommendations
 
 Format your response as a JSON object with the following structure:
 {
@@ -116,8 +107,7 @@ Format your response as a JSON object with the following structure:
           "name": "Activity name",
           "description": "Description",
           "location": "Location",
-          "search_fact": "Current fact from search (e.g., 'Open until 5 PM', 'Price: $25')",
-          "google_search_link": "Link to relevant Google search result"
+          "tips": "Practical tips for this activity"
         }
       ]
     }
@@ -127,7 +117,7 @@ Format your response as a JSON object with the following structure:
       "name": "Restaurant name",
       "type": "Cuisine type",
       "description": "Description",
-      "average_rating": "Rating with search fact"
+      "price_range": "Budget range"
     }
   ],
   "travel_tips": [
@@ -144,47 +134,49 @@ User Preferences and Constraints:
 Please:
 1. Identify the destination from the image
 2. Create a structured day-by-day itinerary
-3. Include current, real-time information from search results for each activity
-4. Provide realistic budget estimates
-5. Include practical travel tips
-6. Format the response as the JSON structure specified"""
+3. Provide realistic budget estimates
+4. Include practical travel tips
+5. Format the response as valid JSON only (no markdown formatting)"""
 
-        # Use the Gemini model with vision capability and search grounding
-        # Using gemini-2.0-flash with search grounding
-        model = genai.GenerativeModel(
-            model_name='gemini-2.0-flash',
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.7,
-                max_output_tokens=4096
-            )
-        )
-        
-        # Enable search grounding via tools
-        tools = [genai.types.Tool(
-            google_search_retrieval=genai.types.GoogleSearchRetrieval()
-        )]
-        
-        # Create the content with image and text
-        response = model.generate_content(
-            [
-                system_prompt,
+        # Use OpenAI's GPT-4 Vision API
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
                 {
-                    "mime_type": mime_type,
-                    "data": image_base64
+                    "role": "system",
+                    "content": system_prompt
                 },
-                user_prompt
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": user_prompt
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{mime_type};base64,{image_base64}"
+                            }
+                        }
+                    ]
+                }
             ],
-            tools=tools
+            max_tokens=4096,
+            temperature=0.7
         )
         
-        # Parse the response
-        response_text = response.text
+        # Parse the response from OpenAI
+        response_text = response.choices[0].message.content
         
         # Try to extract JSON from the response
         try:
-            # Look for JSON in the response
-            import re
-            json_match = re.search(r'\{[\s\S]*\}', response_text)
+            # Remove markdown code blocks if present
+            cleaned_text = re.sub(r'```json\s*', '', response_text)
+            cleaned_text = re.sub(r'```\s*$', '', cleaned_text)
+            cleaned_text = cleaned_text.strip()
+            
+            json_match = re.search(r'\{[\s\S]*\}', cleaned_text)
             if json_match:
                 itinerary_data = json.loads(json_match.group())
             else:

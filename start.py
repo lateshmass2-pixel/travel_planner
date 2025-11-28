@@ -15,7 +15,7 @@ def check_requirements():
     try:
         import flask
         import flask_cors
-        import google.generativeai
+        import openai
         print("✓ All required packages are installed")
         return True
     except ImportError as e:
@@ -25,14 +25,14 @@ def check_requirements():
         return False
 
 def check_api_key():
-    """Check if Gemini API key is configured"""
-    api_key = os.getenv('GEMINI_API_KEY')
+    """Check if OpenAI API key is configured"""
+    api_key = os.getenv('OPENAI_API_KEY')
     if not api_key:
-        print("✗ GEMINI_API_KEY environment variable is not set")
+        print("✗ OPENAI_API_KEY environment variable is not set")
         print("\nPlease ensure .env file exists with your API key:")
-        print("  GEMINI_API_KEY=your_api_key_here")
+        print("  OPENAI_API_KEY=your_api_key_here")
         return False
-    print("✓ Gemini API key is configured")
+    print("✓ OpenAI API key is configured")
     return True
 
 def create_directories():
@@ -50,8 +50,8 @@ def print_banner():
 ║                                                           ║
 ║        🌍 Multi-Modal Travel Planner 🌍                  ║
 ║                                                           ║
-║        Powered by Google Gemini 2.0 Flash                ║
-║        with Vision & Search Grounding                     ║
+║        Powered by OpenAI GPT-4o                          ║
+║        with Vision Capabilities                           ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
 """

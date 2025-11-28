@@ -1,21 +1,20 @@
 # 🌍 Multi-Modal Travel Planner
 
-A cutting-edge web application that leverages the Google Gemini API to create personalized travel itineraries by combining image understanding (Vision) and real-time data (Google Search Grounding).
+A cutting-edge web application that leverages the OpenAI GPT-4 with Vision API to create personalized travel itineraries by analyzing destination images and user preferences.
 
 ## 🎯 Project Overview
 
-The Multi-Modal Travel Planner demonstrates the seamless integration of two core Gemini capabilities:
+The Multi-Modal Travel Planner demonstrates the power of OpenAI's Vision capabilities:
 
-1. **Image Understanding (Vision)** - Accurately identify destinations, landmarks, and events from uploaded images
-2. **Real-Time Data (Google Search Grounding)** - Access current information like operating hours, prices, weather, and reviews
+1. **Image Understanding (Vision)** - Accurately identify destinations, landmarks, and events from uploaded images using GPT-4o
+2. **Intelligent Planning** - Generate detailed, structured travel itineraries based on your preferences and constraints
 
 ### Key Features
 
 - **Dual Input Processing**: Upload destination images + specify travel preferences
-- **AI-Powered Analysis**: Gemini Vision identifies the location and understands constraints
-- **Real-Time Information**: Google Search Grounding ensures up-to-date, accurate data
+- **AI-Powered Analysis**: GPT-4o Vision identifies the location and understands constraints
+- **Intelligent Recommendations**: Smart suggestions based on your preferences and constraints
 - **Structured Itinerary**: Day-by-day breakdown with points of interest, activities, and recommendations
-- **Search Integration**: Each recommendation includes current facts and Google Search links
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 - **Loading Indicators**: Visual feedback during processing
 
@@ -26,7 +25,7 @@ _For a one-command setup, see [QUICKSTART.md](QUICKSTART.md)._
 ### Prerequisites
 
 - Python 3.8+
-- Gemini API Key (get it from [Google AI Studio](https://aistudio.google.com/))
+- OpenAI API Key (get it from [OpenAI Platform](https://platform.openai.com/api-keys))
 - Modern web browser
 
 ### Installation
@@ -48,12 +47,10 @@ _For a one-command setup, see [QUICKSTART.md](QUICKSTART.md)._
    pip install -r requirements.txt
    ```
 
-4. **Set up environment variables** (Optional - pre-configured)
+4. **Set up environment variables**
    ```bash
-   # The .env file is pre-configured with a working API key
-   # To use your own key:
    cp .env.example .env
-   # Edit .env and add your Gemini API Key
+   # Edit .env and add your OpenAI API Key
    ```
 
 5. **Run the application**
@@ -75,7 +72,7 @@ _For a one-command setup, see [QUICKSTART.md](QUICKSTART.md)._
 `start.py` provides a single command that launches the Flask backend and serves the frontend templates together. It also:
 - Loads environment variables from `.env`
 - Verifies that all required Python packages are installed
-- Confirms the Gemini API key is configured (with a working default)
+- Confirms the OpenAI API key is configured
 - Creates required directories such as `uploads/`
 - Shows helpful connection details and tips before launching the server
 
@@ -109,10 +106,8 @@ The generated itinerary includes:
 
 - **Summary Card**: Destination, duration, trip type, and estimated budget
 - **Day-by-Day Breakdown**: Activities organized by time of day
-- **Point of Interest Details**: Name, description, and location
-- **Search Grounding Facts**: Current information like opening hours and prices
-- **Google Search Links**: Direct links for further research
-- **Dining Recommendations**: Restaurant suggestions with ratings
+- **Point of Interest Details**: Name, description, location, and practical tips
+- **Dining Recommendations**: Restaurant suggestions with cuisine types
 - **Travel Tips**: Practical advice for the destination
 
 ## 🏗️ Technical Architecture
@@ -123,7 +118,7 @@ The generated itinerary includes:
 app.py
 ├── /api/generate-itinerary (POST)
 │   ├── Image upload handling
-│   ├── Gemini API integration
+│   ├── OpenAI GPT-4o Vision API integration
 │   └── JSON response formatting
 └── /api/health (GET)
     └── Health check endpoint
@@ -139,13 +134,13 @@ static/
 └── script.js (Interactive functionality)
 ```
 
-### Gemini API Integration
+### OpenAI API Integration
 
 The application uses:
-- **Model**: gemini-2.0-flash (multi-modal capable)
+- **Model**: gpt-4o (multi-modal capable)
 - **Vision**: Image understanding for destination identification
-- **Search Grounding**: Real-time information retrieval
-- **Generation Config**: Optimized for travel planning output
+- **Chat Completions**: Structured JSON response generation
+- **Configuration**: Optimized for travel planning output
 
 ## 📊 Example Scenario
 
@@ -159,9 +154,9 @@ Summary: Paris, France | 2 Days | Family Trip
 
 Day 1: Landmark Exploration
 ├── Morning: Eiffel Tower Visit
-│   └── 🔍 Current opening hours: 9:30 AM to 11:45 PM
+│   └── 💡 Tip: Book tickets in advance to skip the lines
 ├── Afternoon: Louvre Museum
-│   └── 🔍 General admission: $22 per person
+│   └── 💡 Tip: Allow 3-4 hours for major highlights
 └── Evening: Seine River Dinner
 
 Day 2: Kid-Friendly Adventures
@@ -203,8 +198,7 @@ Content-Type: multipart/form-data
           "name": "Eiffel Tower Visit",
           "description": "...",
           "location": "Champ de Mars",
-          "search_fact": "Open until 11:45 PM",
-          "google_search_link": "https://..."
+          "tips": "Book tickets in advance to skip the lines"
         }
       ]
     }
@@ -269,16 +263,16 @@ travel_planner/
 ## 📝 Environment Variables
 
 ```env
-GEMINI_API_KEY=your_api_key_here    # Required: Your Gemini API key
-FLASK_ENV=development                # Optional: Flask environment
-FLASK_DEBUG=True                      # Optional: Debug mode
+OPENAI_API_KEY=your_api_key_here    # Required: Your OpenAI API key
+FLASK_ENV=development               # Optional: Flask environment
+FLASK_DEBUG=True                    # Optional: Debug mode
 ```
 
 ## 🐛 Troubleshooting
 
-### "GEMINI_API_KEY environment variable is not set"
+### "OPENAI_API_KEY environment variable is not set"
 - Make sure you've created a `.env` file in the project root
-- Add your Gemini API key to the `.env` file
+- Add your OpenAI API key to the `.env` file
 - Restart the Flask application
 
 ### Image upload not working
@@ -287,7 +281,7 @@ FLASK_DEBUG=True                      # Optional: Debug mode
 - Check browser console for errors
 
 ### API errors
-- Verify your Gemini API key is valid
+- Verify your OpenAI API key is valid
 - Check network connectivity
 - Review server logs for detailed error messages
 
@@ -314,7 +308,7 @@ CMD ["python", "app.py"]
 ## 📚 Technologies Used
 
 - **Framework**: Flask 3.0.0
-- **API**: Google Gemini 2.0 Flash
+- **API**: OpenAI GPT-4o with Vision
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Language**: Python 3.8+
 - **Styling**: CSS3 with responsive design
@@ -335,7 +329,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙏 Acknowledgments
 
-- Google Gemini API for vision and search capabilities
+- OpenAI for GPT-4o with Vision capabilities
 - Flask framework for backend development
 - The open-source community
 
@@ -345,4 +339,4 @@ For issues, questions, or suggestions, please open an issue on GitHub or contact
 
 ---
 
-**Made with ❤️ using Google Gemini API**
+**Made with ❤️ using OpenAI GPT-4o**

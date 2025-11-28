@@ -8,7 +8,7 @@ Get the Multi-Modal Travel Planner running in **3 simple steps**!
 python start.py
 ```
 
-That's it! The application is pre-configured with a working API key and will:
+That's it! The application will:
 - ✓ Check all dependencies
 - ✓ Verify API configuration
 - ✓ Create necessary directories
@@ -58,12 +58,12 @@ python app.py
 
 ## 🔑 API Key Configuration
 
-The application comes pre-configured with a working Gemini API key. If you want to use your own:
+You need to configure your OpenAI API key:
 
-1. Get your key from [Google AI Studio](https://aistudio.google.com/)
-2. Update the `.env` file:
+1. Get your key from [OpenAI Platform](https://platform.openai.com/api-keys)
+2. Create/update the `.env` file:
    ```
-   GEMINI_API_KEY=your_api_key_here
+   OPENAI_API_KEY=your_api_key_here
    ```
 3. Restart the server
 
@@ -88,8 +88,8 @@ PORT=8080
 
 - Use clear destination images (landmarks, hotels, attractions)
 - Be specific with preferences (e.g., "3 days, $800, family-friendly")
-- Check the search grounding facts for real-time information
-- Click "Learn More" links for additional details
+- Review the generated itinerary for practical tips and recommendations
+- GPT-4o provides intelligent suggestions based on the image and your preferences
 
 ## 🛑 Stop the Server
 
